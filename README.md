@@ -1,3 +1,4 @@
-# Code name: silver-funicular
-My Advent of Code solutions
+
+# My Advent of Code solutions
+## Code name: `silver-funicular`
 Link: https://adventofcode.com/
