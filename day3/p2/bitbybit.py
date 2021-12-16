@@ -2,6 +2,8 @@
 from bitstring import BitArray
 
 
+BYTE_SIZE = 12
+
 
 def read_file_to_array(filepath):
     with open(filepath) as f:
@@ -9,7 +11,7 @@ def read_file_to_array(filepath):
 
 
 def find_most_and_least_common_by_pos(lines):
-    bit_count = [{'0':  0, '1':  0} for i in range(0,5)]
+    bit_count = [{'0':  0, '1':  0} for i in range(0,BYTE_SIZE)]
     for lindex, l in enumerate(lines):
         for cindex, c in enumerate(l.strip()):
             if(int(c) == 0 ):
@@ -20,49 +22,52 @@ def find_most_and_least_common_by_pos(lines):
 
 
 
-def agg_gamma_and_epsilon_rates(bit_count):
-    epsilon = []
-    gamma = []
-    for bit_pos in bit_count:
-        if bit_pos['0'] > bit_pos['1']:
-            gamma.append('0')
-            epsilon.append('1')
-        else:
-            gamma.append('1')
-            epsilon.append('0')
-    return [epsilon, gamma]
+def get_o2_rate(lines, index):
+    temp = []
+    bit_count = find_most_and_least_common_by_pos(lines)
+    for i in lines:
+        # print(i, index)
+        if (bit_count[index]['1'] > bit_count[index]['0']) and i[index] == '1':
+            temp.append(i)
+        elif (bit_count[index]['1'] < bit_count[index]['0']) and i[index] == '0':
+            temp.append(i)
+        elif   (bit_count[index]['1'] == bit_count[index]['0']) and i[index] == '1':
+            temp.append(i)
+    if(len(temp) == 1):
+        return temp[0]
+    else:
+        # print(temp)
+        return get_o2_rate(temp,index+1 )
+
+
+def get_co2_rate(lines, index):
+    temp = []
+    bit_count = find_most_and_least_common_by_pos(lines)
+    for i in lines:
+        if (bit_count[index]['1'] > bit_count[index]['0']) and i[index] == '0':
+            # print(i)
+            temp.append(i)
+        elif (bit_count[index]['1'] < bit_count[index]['0']) and i[index] == '1':
+            # print(i)
+            temp.append(i)
+        elif (bit_count[index]['1'] == bit_count[index]['0']) and i[index] == '0':
+            # print(i)
+            temp.append(i)
+    if(len(temp) == 1):
+        return temp[0]
+    else:
+        # print(temp)
+        return get_co2_rate(temp,index+1 )
+
 
 
 
 if __name__ == "__main__":
     lines = read_file_to_array("../input.txt")
-    bit_count = find_most_and_least_common_by_pos(lines)
-    epsilon, gamma = agg_gamma_and_epsilon_rates(bit_count)
+    print()
+    print()
+
+    print(f'o2: {int(get_o2_rate(lines, 0), 2)}')
+    print(f'co2: {int(get_co2_rate(lines, 0), 2)}')
 
 
-
-
-
-
-
-
-
-
-
-    epsilon = ''.join(epsilon)
-    gamma = ''.join(gamma)
-    print('\ngamma')
-    print(gamma)
-    print(f'int: {int(gamma, 2)} ')
-    
-    print('\nepsilon')
-    print(epsilon)
-    print(f'int: {int(epsilon, 2)} ')
-
-    # print('\no2')
-    # print(o2)
-    # print(f'int: {int(o2, 2)} ')
-
-    # print('\nco2')
-    # print(co2)
-    # print(f'int: {int(co2, 2)} ')
